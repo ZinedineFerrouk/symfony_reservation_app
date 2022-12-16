@@ -17,7 +17,7 @@ class UserFixtures extends Fixture
         $user1 = (new User())->setEmail('user@gmail.com')->setRoles(['ROLE_USER']);
         
         for ($i=1; $i < 10; $i++) { 
-            $user[$i] = (new User())->setEmail('user'. $i .'@gmail.com')->setRoles(['ROLE_USER', 'ROLE_SUPER_ADMIN']);   
+            $user[$i] = (new User())->setEmail('user'. $i .'@gmail.com')->setRoles(['ROLE_USER']);
             $user[$i]->setPassword($this->userEncoderInterface->hashPassword($user[$i], 'test1234'));
             $manager->persist($user[$i]);
         }

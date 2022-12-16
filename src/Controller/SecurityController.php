@@ -39,14 +39,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/logout', name: 'logout')]
-    public function logout(Security $security): Response
-    {
-        // logout the user in on the current firewall
-        $response = $security->logout();
-
-        // you can also disable the csrf logout
-        $response = $security->logout(false);
-    }
+    public function logout(Security $security){}
 
     #[Route('/register', name: 'register')]
     public function register(Request $request)
