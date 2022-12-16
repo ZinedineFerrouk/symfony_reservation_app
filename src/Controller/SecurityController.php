@@ -5,16 +5,19 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegisterType;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    public function __construct(private UserRepository $userRepo){}
+    public function __construct(private UserRepository $userRepo, private UserPasswordHasherInterface $hasher){}
 
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -46,18 +49,22 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/register', name: 'register')]
-    public function register(Request $request): Response
+    public function register(Request $request)
     {
         $user = new User();
         $form = $this->createForm(RegisterType::class, $user);
-
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd($form->getData());
+            $userData = $form->getData();
+
+            $user->setRoles(['ROLE_USER']);
+            $user->setEmail($userData->getEmail());
+            $user->setPassword($this->hasher->hashPassword($user, $userData->getPassword()));
+
             $this->userRepo->save($user, true);
 
-            // return $this->redirect('home');
+            return $this->redirect('login');
         }
 
         return $this->render('security/register.html.twig', [
