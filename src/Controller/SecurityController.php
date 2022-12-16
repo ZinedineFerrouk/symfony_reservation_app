@@ -2,17 +2,28 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Form\RegisterType;
+use App\Repository\UserRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
+    public function __construct(private UserRepository $userRepo){}
+
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        // Check si l'utilisateur est déjà connecter
+        if ($this->getUser()) {
+            return $this->redirectToRoute('home');
+        }
+
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
@@ -32,5 +43,26 @@ class SecurityController extends AbstractController
 
         // you can also disable the csrf logout
         $response = $security->logout(false);
+    }
+
+    #[Route('/register', name: 'register')]
+    public function register(Request $request): Response
+    {
+        $user = new User();
+        $form = $this->createForm(RegisterType::class, $user);
+
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            // dd($form->getData());
+            $this->userRepo->save($user, true);
+
+            // return $this->redirect('home');
+        }
+
+        return $this->render('security/register.html.twig', [
+            'user' => $user,
+            'registerForm' => $form,
+        ]);
     }
 }

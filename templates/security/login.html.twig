@@ -1,26 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello SecurityController!{% endblock %}
+{% block title %}Login
+{% endblock %}
 
 {% block body %}
-<h1>Login Page</h1>
+	<h1>Login Page</h1>
 
-{% if error %}
-        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+	{% if error %}
+		<div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+	{% endif %}
 
-    <form action="{{ path('login') }}" method="post">
-        <label for="username">Email:</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}">
+	<form class="login-form" action="{{ path('login') }}" method="post">
+		<div>
+			<label for="username">Email:</label>
+			<input type="text" id="username" name="_username" value="{{ last_username }}">
+		</div>
+		<div>
+			<label for="password">Password:</label>
+			<input class="password" type="password" id="password" name="_password">
+		</div>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="_password">
+		<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-        {# If you want to control the URL the user is redirected to on success
-        <input type="hidden" name="_target_path" value="/account"> #}
-
-        <button type="submit">Connexion</button>
-    </form>
+		{# If you want to control the URL the user is redirected to on success #}
+		{# <input type="hidden" name="_target_path" value="/account">  #}
+		<button type="submit">Connexion</button>
+	</form>
 {% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login
+{% endblock %}
+
+{% block body %}
+	<h1>Inscription</h1>
+
+	{{ form_start(registerForm, {'attr': {'novalidate': 'novalidate'}}) }}
+        {{ form_row(registerForm.email) }}
+        {{ form_row(registerForm.password) }}
+        {{ form_row(registerForm.submit) }}
+	{{ form_end(registerForm) }}
+{% endblock %}
