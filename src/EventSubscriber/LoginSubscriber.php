@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
+use Symfony\Component\Security\Http\Event\LogoutEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class LoginSubscriber implements EventSubscriberInterface
@@ -27,9 +28,6 @@ class LoginSubscriber implements EventSubscriberInterface
         $this->entityManager->flush();
 
         $request = $this->requestStack->getSession()->getFlashBag()->add('success', 'Heureux de vous revoir ici !');
-        // dd($request);
-
-        // $this->session->getFlashBag()->add('success', 'Heureux de vous revoir par ici !');
     }
 
     public function onLoginFailureEvent(LoginFailureEvent $event): void

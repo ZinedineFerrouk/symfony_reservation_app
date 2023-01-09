@@ -8,6 +8,7 @@ use App\Service\TokenService;
 use App\Service\MailerService;
 use App\Form\ResetPasswordType;
 use Doctrine\ORM\EntityManager;
+use App\Event\UserRegisterEvent;
 use App\Repository\UserRepository;
 use App\Form\ResetPasswordConfirmType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,7 +66,7 @@ class SecurityController extends AbstractController
             $this->userRepo->save($user, true);
 
             // Appel du Subscriber
-            $this->eventDispatcher->dispatch(new UserRegisterEvent);
+            $this->eventDispatcher->dispatch(new UserRegisterEvent($user), UserRegisterEvent::NAME);
 
             return $this->redirect('login');
         }
