@@ -17,13 +17,14 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SecurityController extends AbstractController
 {
-    public function __construct(private UserRepository $userRepo, private UserPasswordHasherInterface $hasher, private UrlGeneratorInterface $urlGenerator){}
+    public function __construct(private UserRepository $userRepo, private UserPasswordHasherInterface $hasher, private UrlGeneratorInterface $urlGenerator, private EventDispatcherInterface $eventDispatcher){}
 
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -62,6 +63,9 @@ class SecurityController extends AbstractController
             $user->setPassword($this->hasher->hashPassword($user, $userData->getPassword()));
 
             $this->userRepo->save($user, true);
+
+            // Appel du Subscriber
+            $this->eventDispatcher->dispatch(new UserRegisterEvent);
 
             return $this->redirect('login');
         }
