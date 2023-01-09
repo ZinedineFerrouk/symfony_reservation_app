@@ -83,19 +83,18 @@ class SecurityController extends AbstractController
             $user = $this->userRepo->findOneBy(['email' => $email]);
 
             if (!$user) {
-                // On renvoie une erreur
-                throw new Exception("Erreur lors du processus", 1);
+                $this->addFlash('danger', 'Aucun compte ne correspond à l\'email renseigné');
+                return $this->redirectToRoute('reset-password');
             }
 
             $user->setTokenApp($tokenService->generateRandomToken());
-            // dd($user);
             $this->userRepo->save($user, true);
 
             // Envoi de mail
             $mailerService->sendPasswordResetEmail($user, $this->urlGenerator->generate('reset-password-token', ['token' => $user->getTokenApp()], UrlGeneratorInterface::ABSOLUTE_URL));
             // Renvoyer un message flash success
 
-            return $this->redirect('reset-password-token');
+            return $this->redirect('reset-password');
         }
 
         return $this->render('security/reset_password.html.twig', [
@@ -108,9 +107,10 @@ class SecurityController extends AbstractController
     {     
         $user = $userRepository->findOneBy(['token_app' => $token]);
 
-            if (!$user) {
-                // On renvoie une erreur
-            }
+        if (!$user) {
+            $this->addFlash('danger', 'Le token ne correspond pas');
+            return $this->redirectToRoute('reset-password');
+        }   
         
         $form = $this->createForm(ResetPasswordConfirmType::class);
         $form->handleRequest($request);
@@ -122,7 +122,7 @@ class SecurityController extends AbstractController
             $user->setTokenApp(null);
             $this->userRepo->save($user, true);
 
-            // Renvoyer un message flash success
+            $this->addFlash('success', 'Votre mot de passe à bien été mis à jour.');
 
             return $this->redirect('login');
         }

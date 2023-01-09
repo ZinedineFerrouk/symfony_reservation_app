@@ -35,6 +35,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $token_app = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $visites = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -113,6 +116,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTokenApp(?string $token_app): self
     {
         $this->token_app = $token_app;
+
+        return $this;
+    }
+
+    public function getVisites(): ?int
+    {
+        return $this->visites;
+    }
+
+    public function setVisites(?int $visites): self
+    {
+        $this->visites = $visites;
 
         return $this;
     }

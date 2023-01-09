@@ -22,9 +22,9 @@ class MailerService
             ->to('you@example.com')
             ->subject('Time for Symfony Mailer!')
             ->text('Réinitialiser votre mot de passe ici: ' . $url)
-            ->html('<p>See Twig integration for better HTML integration!
-            Réinitialiser votre mot de passe ici: ' . $url . '
-            </p>');
+            ->html('<p>See Twig integration for better HTML integration!</p>'.
+            '<a target="_blank" href="' . $url . '">Cliquez sur ce lien pour reinitialiser votre mot de passe</a>'
+        );
 
         $this->mailer->send($message);
     }
