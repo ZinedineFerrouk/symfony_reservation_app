@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
+use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class LoginSubscriber implements EventSubscriberInterface
@@ -31,10 +32,22 @@ class LoginSubscriber implements EventSubscriberInterface
         // $this->session->getFlashBag()->add('success', 'Heureux de vous revoir par ici !');
     }
 
+    public function onLoginFailureEvent(LoginFailureEvent $event): void
+    {
+        $request = $this->requestStack->getSession()->getFlashBag()->add('danger', 'Désolé une erreur s\'est produite.');
+    }
+
+    public function onLogoutEvent(LogoutEvent $event): void
+    {
+        $request = $this->requestStack->getSession()->getFlashBag()->add('success', 'Vous avez éte correctement deconnecté. A bientôt !');
+    }
+
     public static function getSubscribedEvents(): array
     {
         return [
             LoginSuccessEvent::class => 'onLoginSuccessEvent',
+            LoginFailureEvent::class => 'onLoginFailureEvent',
+            LogoutEvent::class => 'onLogoutEvent',
         ];
     }
 }

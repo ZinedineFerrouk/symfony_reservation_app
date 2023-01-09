@@ -2,7 +2,7 @@ when@dev:
     web_profiler:
         toolbar: true
         # Intercepter les mails
-        intercept_redirects: true
+        intercept_redirects: false
 
     framework:
         profiler:
