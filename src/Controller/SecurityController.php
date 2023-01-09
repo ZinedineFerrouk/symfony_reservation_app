@@ -4,20 +4,26 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegisterType;
-use App\Repository\UserRepository;
+use App\Service\TokenService;
+use App\Service\MailerService;
+use App\Form\ResetPasswordType;
 use Doctrine\ORM\EntityManager;
+use App\Repository\UserRepository;
+use App\Form\ResetPasswordConfirmType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SecurityController extends AbstractController
 {
-    public function __construct(private UserRepository $userRepo, private UserPasswordHasherInterface $hasher){}
+    public function __construct(private UserRepository $userRepo, private UserPasswordHasherInterface $hasher, private UrlGeneratorInterface $urlGenerator){}
 
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -63,6 +69,66 @@ class SecurityController extends AbstractController
         return $this->render('security/register.html.twig', [
             'user' => $user,
             'registerForm' => $form,
+        ]);
+    }
+
+    #[Route('/reset-password', name: 'reset-password')]
+    public function resetPassword(Request $request,  MailerService $mailerService, TokenService $tokenService)
+    {
+        $form = $this->createForm(ResetPasswordType::class);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = $form->get('email')->getData();
+            $user = $this->userRepo->findOneBy(['email' => $email]);
+
+            if (!$user) {
+                // On renvoie une erreur
+                throw new Exception("Erreur lors du processus", 1);
+            }
+
+            $user->setTokenApp($tokenService->generateRandomToken());
+            // dd($user);
+            $this->userRepo->save($user, true);
+
+            // Envoi de mail
+            $mailerService->sendPasswordResetEmail($user, $this->urlGenerator->generate('reset-password-token', ['token' => $user->getTokenApp()], UrlGeneratorInterface::ABSOLUTE_URL));
+            // Renvoyer un message flash success
+
+            return $this->redirect('reset-password-token');
+        }
+
+        return $this->render('security/reset_password.html.twig', [
+            'resetPasswordForm' => $form,
+        ]);
+    }
+
+    #[Route('/reset-password/{token}', name: 'reset-password-token')]
+    public function resetPasswordWithToken(Request $request, UserRepository $userRepository, string $token)
+    {     
+        $user = $userRepository->findOneBy(['token_app' => $token]);
+
+            if (!$user) {
+                // On renvoie une erreur
+            }
+        
+        $form = $this->createForm(ResetPasswordConfirmType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $form->get('password')->getData();
+            $user->setPassword($this->hasher->hashPassword($user, $password));
+
+            $user->setTokenApp(null);
+            $this->userRepo->save($user, true);
+
+            // Renvoyer un message flash success
+
+            return $this->redirect('login');
+        }
+
+        return $this->render('security/reset_password_token.html.twig', [
+            'resetPasswordTokenForm' => $form,
         ]);
     }
 }
