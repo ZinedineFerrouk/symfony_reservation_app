@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\SalleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SalleRepository::class)]
 class Salle
@@ -14,9 +15,23 @@ class Salle
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 2,
+        max: 58,
+        minMessage:'Veuillez saisir un nom de salle avec plus de caractères',
+        maxMessage:'Veuillez saisir un nom de salle avec moins de caractères',
+    )]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 2,
+        max: 500,
+        minMessage:'Veuillez saisir un contenu avec plus de caractères',
+        maxMessage:'Veuillez saisir un contenu avec moins de caractères',
+    )]
     private ?string $content = null;
 
     public function getId(): ?int

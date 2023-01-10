@@ -9,7 +9,15 @@ export default {
             ...apiOptions,
             method: 'GET',
         })
+        return await response.json();
+    },
 
+    async addSalle(data = {}){
+        const response = await fetch('/api/salles/add', {
+            ...apiOptions,
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
         return await response.json();
     }
 }
