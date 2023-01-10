@@ -1,29 +1,29 @@
 <template>
   <div>
     <p>Gestion des salles</p>
+
+    <ul>
+      <li v-for="salle in salles">{{ salle.title }}</li>
+    </ul>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import {onMounted, ref} from 'vue';
+import ApiSalle from '../api/api'
+
 const salles = ref([]);
+console.log(salles);
 
 onMounted(() => {
   console.log('Init On Mount')
-  fetch('/api/salles', {
-    method: 'GET',
-    // Check que c'est bien le même serveur qui fait la requête à ne pas mettre pour que quelqu'un puisse y accèder
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    }
-  })
-      .then(response => response.json())
-      .then(res => {
-        console.log(res);
-      })
+  getSallesRequest();
 })
+
+async function getSallesRequest(){
+  let response = await ApiSalle.getSalles();
+  salles.value = response;
+}
 </script>
 
 <style scoped lang="scss">

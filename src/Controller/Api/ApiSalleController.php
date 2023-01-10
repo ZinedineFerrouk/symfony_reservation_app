@@ -20,7 +20,11 @@ class ApiSalleController extends AbstractController
             return $this->json(['status' => 'ERROR', 'message' => 'Désolé la requête n\'est pas conforme'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $salles = $this->salleRepository->findAll();
-        return $this->json($salles);
+        $salles = array();
+        foreach ($this->salleRepository->findAll() as $salle )
+        {
+            $salles[] = $salle->getInfos();
+        }
+        return $this->json($salles, Response::HTTP_OK);
     }
 }

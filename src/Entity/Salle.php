@@ -47,4 +47,13 @@ class Salle
 
         return $this;
     }
+
+    public function getInfos(): array
+    {
+        return array(
+            'id'      => $this->getId(),
+            'title'   => $this->getTitle(),
+            'content' => $this->getContent(),
+        );
+    }
 }
