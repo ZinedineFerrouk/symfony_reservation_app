@@ -28,10 +28,5 @@ class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/salle', name: 'admin-salle')]
-    public function adminSalle(): Response
-    {
 
-        return $this->render('event/salle.html.twig');
-    }
 }

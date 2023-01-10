@@ -15,4 +15,10 @@ class AdminController extends AbstractController
             'controller_name' => 'AdminController',
         ]);
     }
+
+    #[Route('/admin/salle', name: 'admin-salle')]
+    public function adminSalle(): Response
+    {
+        return $this->render('event/salle.html.twig');
+    }
 }
