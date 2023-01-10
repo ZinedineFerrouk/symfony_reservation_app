@@ -1,0 +1,17 @@
+{% extends 'admin/index.html.twig' %}
+
+{% block title %}Admin Salle!{% endblock %}
+
+ {% block javascripts %}
+     {{ encore_entry_script_tags('salle') }}
+ {% endblock %}
+{% block stylesheets %}
+    {{ encore_entry_link_tags('salle') }}
+{% endblock %}
+
+{% block body %}
+    <h1>Admin Salle</h1>
+    <div id="app_salle"></div>
+{% endblock %}
+
+

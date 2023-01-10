@@ -9,12 +9,28 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>Bienvenue sur l'admin</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/Users/zferrouk/OneDrive - Altran Technologies/Bureau/NFS/Symfony/reservation/src/Controller/AdminController.php'|file_link(0) }}">src/Controller/AdminController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/Users/zferrouk/OneDrive - Altran Technologies/Bureau/NFS/Symfony/reservation/templates/admin/index.html.twig'|file_link(0) }}">templates/admin/index.html.twig</a></code></li>
-    </ul>
+    <header>
+        <nav>
+            <ul>
+                <li>
+                    <a href={{ path('home') }}>Home</a>
+                </li>
+                <li>
+                    <a href={{ path('admin') }}>Admin</a>
+                </li>
+                <li>
+                    <a href={{ path('admin-salle') }}>Salles</a>
+                </li>
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    <li>
+                        <a class="link" href="{{ path('logout') }}">Déconnexion</a>
+                    </li>
+                {% endif %}
+
+            </ul>
+        </nav>
+    </header>
 </div>
 {% endblock %}
