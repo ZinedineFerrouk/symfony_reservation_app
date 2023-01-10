@@ -15,10 +15,12 @@ class ApiSalleController extends AbstractController
     #[Route('/api/salles', name: 'api_salle', methods: ['GET'])]
     public function index(Request $request)
     {
-        if ($request->isXmlHttpRequest()){
-            return $this->json(['status' => 'error', 'message' => 'Erreur'], Response::HTTP_UNAUTHORIZED);
+        // Renvoi une erreur si la requête faite dans le front n'est pas de type XmlHttpRequest
+        if (!$request->isXmlHttpRequest()){
+            return $this->json(['status' => 'ERROR', 'message' => 'Désolé la requête n\'est pas conforme'], Response::HTTP_UNAUTHORIZED);
         }
-        //$salles = $this->salleRepository->findAll();
-        return $this->json(['test' => 'tess']);
+
+        $salles = $this->salleRepository->findAll();
+        return $this->json($salles);
     }
 }
